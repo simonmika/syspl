@@ -23,7 +23,7 @@ namespace Kean.Extension
 {
 	public static class EnumeratorExtension
 	{
-				public static T Next<T>(this Generic.IEnumerator<T> me)
+		public static T Next<T>(this Generic.IEnumerator<T> me)
 		{
 			return me.NotNull() && me.MoveNext() ? me.Current : default(T);
 		}
@@ -224,18 +224,6 @@ namespace Kean.Extension
 			}
 		}
 		#endregion
-		public static string Join(this Generic.IEnumerator<string> me, string separator)
-		{
-			System.Text.StringBuilder result = new System.Text.StringBuilder();
-			if (me.MoveNext())
-			{
-				result.Append(me.Current);
-				while (me.MoveNext())
-					result.Append(separator).Append(me.Current);
-			}
-			return result.ToString();
-		}
-
 		static T[] ToArray<T>(this Generic.IEnumerator<T> me, int count)
 		{
 			T[] result;

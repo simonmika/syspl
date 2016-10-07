@@ -16,6 +16,7 @@
 // along with Kean.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using Kean.Extension;
 using Kean.Collection.Extension;
 
 namespace Kean.Collection.Wrapped
@@ -99,7 +100,7 @@ namespace Kean.Collection.Wrapped
 		#endregion
 		#region IAsArray
 		public T[] AsArray() {
-			return this.backend is IAsArray<T> && this.head == 0 && this.tail == this.backend.Count - 1 ? ((IAsArray<T>) this.backend).AsArray() : this.ToArray();
+			return this.backend is IAsArray<T> && this.head == 0 && this.tail == this.backend.Count - 1 ? this.backend.AsArray() : this.ToArray();
 		}
 		#endregion
 	}

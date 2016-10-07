@@ -16,13 +16,36 @@
 // along with Kean.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-namespace Kean.IO
+using System;
+using Generic = System.Collections.Generic;
+using Kean.Extension;
+
+namespace Kean
 {
-	public interface ISeekableBlockDevice :
-		ISeekableDevice,
-		IBlockDevice,
-		ISeekableBlockInDevice,
-		ISeekableBlockOutDevice
+	public class Enumerator<T> :
+		Generic.IEnumerator<T>
 	{
+		Func<T> next;
+		Action reset;
+		Action dispose;
+		T current;
+		public T Current { get { return this.current; } }
+		object System.Collections.IEnumerator.Current { get { return this.current; } }
+		public Enumerator(Func<T> next, Action reset = null, Action dispose = null)
+		{
+			this.next = next;
+		}
+		public bool MoveNext()
+		{
+			return (this.current = this.next()).NotNull();
+		}
+		public void Reset()
+		{
+			this.reset.Call();
+		}
+		public void Dispose()
+		{
+			this.dispose.Call();
+		}
 	}
 }

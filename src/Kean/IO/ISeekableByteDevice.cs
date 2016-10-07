@@ -20,6 +20,7 @@ namespace Kean.IO
 {
 	public interface ISeekableByteDevice :
 		ISeekableDevice,
+		IByteDevice,
 		ISeekableByteInDevice,
 		ISeekableByteOutDevice
 	{

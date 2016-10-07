@@ -17,11 +17,22 @@
 //
 
 using Tasks = System.Threading.Tasks;
- 
+using Generic = System.Collections.Generic;
+
 namespace Kean.IO.Extension
 {
 	public static class ByteInDeviceExtension
 	{
+		#region GetEnumerator
+		public static Generic.IEnumerator<Tasks.Task<byte?>> GetEnumerator(this IByteInDevice device)
+		{
+			yield return device.Read();
+		}
+		public static Generic.IEnumerator<Tasks.Task<Collection.IBlock<byte>>> GetEnumerator(this IBlockInDevice device)
+		{
+			yield return device.Read();
+		}
+		#endregion
 		#region Skip
 		public static async Tasks.Task<T> Skip<T>(this T me, int count)
 			where T : IByteInDevice

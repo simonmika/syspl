@@ -19,7 +19,7 @@
 using System;
 using Generic = System.Collections.Generic;
 
-namespace Kean.Collection
+namespace Kean
 {
 	public class Enumerable<T> :
 		Generic.IEnumerable<T>

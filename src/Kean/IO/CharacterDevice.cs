@@ -44,7 +44,7 @@ namespace Kean.IO
 		}
 		#endregion
 		#region ICharacterOutDevice Members
-		public Tasks.Task<bool> Write(Generic.IEnumerable<char> buffer)
+		public Tasks.Task<bool> Write(Generic.IEnumerator<char> buffer)
 		{
 			return this.backend.Write(buffer.Encode(this.encoding));
 		}

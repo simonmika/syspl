@@ -24,6 +24,6 @@ namespace Kean.IO
 	public interface IByteOutDevice :
 		IOutDevice
 	{
-		Tasks.Task<bool> Write(Generic.IEnumerable<byte> buffer);
+		Tasks.Task<bool> Write(Generic.IEnumerator<byte> buffer);
 	}
 }

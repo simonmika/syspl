@@ -51,7 +51,7 @@ namespace Kean.IO
 		}
 		#endregion
 		#region IByteOutDevice Members
-		public Tasks.Task<bool> Write(Generic.IEnumerable<byte> buffer)
+		public Tasks.Task<bool> Write(Generic.IEnumerator<byte> buffer)
 		{
 			return this.outDevice?.Write(buffer);
 		}

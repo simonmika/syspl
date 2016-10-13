@@ -1,4 +1,4 @@
-// Copyright (C) 2011  Simon Mika <simon@mika.se>
+// Copyright (C) 2011	Simon Mika <simon@mika.se>
 //
 // This file is part of Kean.
 //
@@ -9,32 +9,48 @@
 //
 // Kean is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Kean.  If not, see <http://www.gnu.org/licenses/>.
+// along with Kean.	If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System;
 using Tasks = System.Threading.Tasks;
 using Generic = System.Collections.Generic;
 using Kean.Extension;
 
 namespace Kean.IO
 {
-	public class CharacterWriter :
-		Abstract.CharacterWriter
+	public class TextWriter :
+		ITextWriter
 	{
 		ICharacterOutDevice backend;
-		public override Uri.Locator Resource { get { return this.backend.Resource; } }
-		public override bool Opened { get { return this.backend.NotNull() && this.backend.Opened; } }
-		public override bool Writable { get { return this.backend.NotNull() && this.backend.Writable; } }
-		protected CharacterWriter(ICharacterOutDevice backend)
+		Generic.IEnumerator<char> buffer;
+		readonly object bufferLock = new object();
+		public Uri.Locator Resource { get { return this.backend?.Resource; } }
+		public bool Opened { get { return this.backend?.Opened ?? false; } }
+		public bool Writable { get { return this.backend?.Writable ?? false; } }
+		public char[] NewLine { get; set; } = new char[] { '\n' };
+		public bool AutoFlush
+		{
+			get { return this.backend?.AutoFlush ?? false; }
+			set { this.backend.AutoFlush = value; }
+		}
+		protected TextWriter(ICharacterOutDevice backend)
 		{
 			this.backend = backend;
-			this.NewLine = new char[] { '\n' };
 		}
-		public async override Tasks.Task<bool> Close()
+		~TextWriter()
+		{
+			this.Close().Wait();
+		}
+		void IDisposable.Dispose()
+		{
+			this.Close().Wait();
+		}
+		public async Tasks.Task<bool> Close()
 		{
 			bool result;
 			if (result = this.backend.NotNull() && await this.backend.Close())
@@ -42,18 +58,19 @@ namespace Kean.IO
 			return result;
 		}
 		#region implemented abstract and virtual members of Kean.IO.Abstract.CharacterWriter
-		public override Tasks.Task<bool> Write(Generic.IEnumerable<char> buffer)
+		public bool Write(Generic.IEnumerator<char> buffer)
 		{
-			return this.backend.Write(new Enumerable<char>(() => new NewLineConverter(buffer.GetEnumerator(), this.NewLine)));
+			this.buffer = this.buffer.Append(new NewLineConverter(buffer, this.NewLine));
+			if (this.AutoFlush)
+				this.Flush().Start(); // Perform writing and flushing in the background. TODO: Is start needed?
+			return this.Writable;
 		}
-		public override bool AutoFlush
+		public async Tasks.Task<bool> Flush()
 		{
-			get { return this.backend.AutoFlush; }
-			set { this.backend.AutoFlush = value; }
-		}
-		public async override Tasks.Task<bool> Flush()
-		{
-			return this.backend.NotNull() && await this.backend.Flush();
+			return this.backend.NotNull() &&
+				await this.backend.Write(this.buffer) &&
+				(this.buffer = null).NotNull() &&
+				await this.backend.Flush();
 		}
 		#endregion
 		#region NewLineConverter Class
@@ -114,17 +131,17 @@ namespace Kean.IO
 		}
 		#endregion
 		#region Static Open & Create
-		public static ICharacterWriter Open(Uri.Locator resource)
+		public static ITextWriter Open(Uri.Locator resource)
 		{
-			return CharacterWriter.Open(CharacterDevice.Open(resource));
+			return TextWriter.Open(CharacterDevice.Open(resource));
 		}
-		public static ICharacterWriter Create(Uri.Locator resource)
+		public static ITextWriter Create(Uri.Locator resource)
 		{
-			return CharacterWriter.Open(CharacterDevice.Create(resource));
+			return TextWriter.Open(CharacterDevice.Create(resource));
 		}
-		public static ICharacterWriter Open(ICharacterOutDevice backend)
+		public static ITextWriter Open(ICharacterOutDevice backend)
 		{
-			return backend.NotNull() ? new CharacterWriter(backend) : null;
+			return backend.NotNull() ? new TextWriter(backend) : null;
 		}
 		#endregion
 	}

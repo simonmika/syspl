@@ -22,8 +22,8 @@ using Kean.Extension;
 
 namespace Kean.IO
 {
-	public class CharacterReader :
-		ICharacterReader
+	public class TextReader :
+		ITextReader
 	{
 		ICharacterInDevice backend;
 		public Uri.Locator Resource { get { return this.backend?.Resource; } }
@@ -33,12 +33,12 @@ namespace Kean.IO
 		public Tasks.Task<bool> Empty { get { return this.backend?.Empty; } }
 		public bool Readable { get { return this.backend.NotNull() && this.backend.Readable; } }
 		public char Last { get; private set; }
-		protected CharacterReader(ICharacterInDevice backend)
+		protected TextReader(ICharacterInDevice backend)
 		{
 			this.backend = backend;
 			this.Row = 1;
 		}
-		~CharacterReader()
+		~TextReader()
 		{
 			this.Close().Wait();
 		}
@@ -82,13 +82,13 @@ namespace Kean.IO
 		}
 		#endregion
 		#region Static Open
-		public static ICharacterReader Open(ICharacterInDevice backend)
+		public static ITextReader Open(ICharacterInDevice backend)
 		{
-			return backend.NotNull() ? new CharacterReader(backend) : null;
+			return backend.NotNull() ? new TextReader(backend) : null;
 		}
-		public static ICharacterReader Open(Uri.Locator resource)
+		public static ITextReader Open(Uri.Locator resource)
 		{
-			return CharacterReader.Open(CharacterDevice.Open(resource));
+			return TextReader.Open(CharacterDevice.Open(resource));
 		}
 		#endregion
 	}

@@ -1,4 +1,4 @@
-// Copyright (C) 2011  Simon Mika <simon@mika.se>
+// Copyright (C) 2011, 2016 Simon Mika <simon@mika.se>
 //
 // This file is part of Kean.
 //
@@ -9,21 +9,20 @@
 //
 // Kean is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
 // GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with Kean.  If not, see <http://www.gnu.org/licenses/>.
+// along with Kean.	If not, see <http://www.gnu.org/licenses/>.
 //
-
-using Tasks = System.Threading.Tasks;
-using Generic = System.Collections.Generic;
 
 namespace Kean.IO
 {
-	public interface ICharacterOutDevice :
-		IOutDevice
+	public interface ITextIndenter :
+		ITextWriter
 	{
-		Tasks.Task<bool> Write(Generic.IEnumerator<char> buffer);
+		char[] Indention { get; set; }
+		bool Increase();
+		bool Decrease();
 	}
 }

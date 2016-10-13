@@ -53,7 +53,7 @@ namespace Kean.IO
 		{
 			return this.peeked?.Dequeue() ?? (this.peeked = await this.RawRead())?.Dequeue();
 		}
-		public async Tasks.Task<bool> Write(Generic.IEnumerable<byte> buffer)
+		public async Tasks.Task<bool> Write(Generic.IEnumerator<byte> buffer)
 		{
 			bool result = buffer.NotNull();
 			if (result)
@@ -71,7 +71,7 @@ namespace Kean.IO
 					await this.Seek(seek);
 				try
 				{
-					byte[] array = buffer.AsArray();
+					byte[] array = buffer.ToArray();
 					await this.backend.WriteAsync(array, 0, array.Length);
 					if (this.AutoFlush)
 						await this.Flush();

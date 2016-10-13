@@ -16,26 +16,16 @@
 // along with Kean.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
 using Tasks = System.Threading.Tasks;
-using Generic = System.Collections.Generic;
 
 namespace Kean.IO
 {
-	public interface ICharacterWriter :
-		IOutDevice
+	public interface ITextReader :
+		IInDevice
 	{
-		char[] NewLine { get; set; }
-		Tasks.Task<bool> Write(params char[] buffer);
-		Tasks.Task<bool> Write(string value);
-		Tasks.Task<bool> Write<T>(T value) where T : IConvertible;
-		Tasks.Task<bool> Write(string format, params object[] arguments);
-		Tasks.Task<bool> Write(Generic.IEnumerable<char> buffer);
-		Tasks.Task<bool> WriteLine();
-		Tasks.Task<bool> WriteLine(params char[] buffer);
-		Tasks.Task<bool> WriteLine(string value);
-		Tasks.Task<bool> WriteLine<T>(T value) where T : IConvertible;
-		Tasks.Task<bool> WriteLine(string format, params object[] arguments);
-		Tasks.Task<bool> WriteLine(Generic.IEnumerable<char> buffer);
+		int Column { get; }
+		int Row { get; }
+		char Last { get; }
+		Tasks.Task<bool> Next();
 	}
 }
